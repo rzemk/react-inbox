@@ -4,8 +4,9 @@ import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import 'font-awesome/css/font-awesome.css';
-import App from './App';
+import Inbox from './components/Inbox';
+// import App from './App'
 import registerServiceWorker from './registerServiceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<Inbox />, document.getElementById('root'));
 registerServiceWorker();
