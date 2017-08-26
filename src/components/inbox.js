@@ -8,13 +8,6 @@ import { seedMessages } from '../data/messages'
 export default class Inbox extends React.Component {
 
   componentWillMount() {
-    // this.setState({
-    //   messages: [
-    //     {id: 1, selected: true, subject: 'i am message 1', read: true, starred: true, labels: {dev: true, other: true}},
-    //     {id: 2, selected: false, subject: 'i am message 2', read: true, labels: []},
-    //     {id: 3, selected: true, subject: 'i am message 3', read: false, labels: []},
-    //     {id: 4, selected: true, subject: 'i am message 4', read: true, labels: {again: true}}
-    //   ]})
     let labels;
     let messages = seedMessages.map(message => {
       labels = {}
