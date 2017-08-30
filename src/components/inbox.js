@@ -2,14 +2,18 @@ import React from 'react'
 
 import Toolbar from './Toolbar'
 import MessageList from './MessageList'
-
-import { seedMessages } from '../data/messages'
+import ComposeMessage from './ComposeMessage'
 
 export default class Inbox extends React.Component {
 
-  componentWillMount() {
+  state = {messages: [], showComposeMessage: false}
+
+  async componentDidMount() {
+    const messagesResponse = await fetch(`http://localhost:3001/api/messages`)
+    const messagesJson = await messagesResponse.json()
+    const serverMessages = messagesJson._embedded.messages
     let labels;
-    let messages = seedMessages.map(message => {
+    let messages = serverMessages.map(message => {
       labels = {}
       message.labels.map(label => {
         labels[label] = true
@@ -31,17 +35,31 @@ export default class Inbox extends React.Component {
   }
 
   setFieldForSelected = (field, value) => {
+    let body = {
+      messageIds: [],
+      command: field
+    }
+    body[field] = value
     let messages = this.state.messages.map(message => {
       if (message.selected) {
+        body.messageIds.push(message.id)
         message[field] = value;
       }
       return message;
     });
 
+    this.updateServer(body)
+
     this.setState({messages});
   }
 
   setFieldForId = (field, value, id) => {
+    const cmd = field === 'starred' ? 'star' : field;
+    let body = {
+      messageIds: [id],
+      command: cmd
+    }
+    body[cmd] = value
     let messages = this.state.messages.map(message => {
       if (message.id === id) {
         message[field] = value;
@@ -49,18 +67,59 @@ export default class Inbox extends React.Component {
       return message;
     });
 
+    if (field !== 'selected') {
+      this.updateServer(body)
+    }
+
     this.setState({messages});
   }
 
-  setLabelForSelected = (field, value) => {
+  setLabelForSelected = (label, value) => {
+    let messageIds = []
     let messages = this.state.messages.map(message => {
       if (message.selected) {
-        message.labels[field] = value;
+        messageIds.push(message.id)
+        message.labels[label] = value;
       }
       return message;
     });
 
+    const command = value ? 'addLabel' : 'removeLabel'
+
+    this.updateServer({messageIds, command, label})
+
     this.setState({messages});
+  }
+
+  updateServer = (body) => {
+    fetch(`http://localhost:3001/api/messages`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
+  }
+
+  createNewMessage = (subject, message) => {
+    let body = {
+      subject,
+      body: message
+    }
+    fetch(`http://localhost:3001/api/messages`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
+  }
+
+  toggleComposeMessage = () => {
+    let showComposeMessage = !this.state.showComposeMessage
+    this.setState({ showComposeMessage })
   }
 
   render() {
@@ -71,7 +130,9 @@ export default class Inbox extends React.Component {
           setFieldForSelected={this.setFieldForSelected}
           setFieldForAll={this.setFieldForAll}
           setLabelForSelected={this.setLabelForSelected}
+          toggleComposeMessage={this.toggleComposeMessage}
         />
+        { this.state.showComposeMessage && <ComposeMessage createNewMessage={this.createNewMessage}/> }
         <MessageList messages={ this.state.messages } setFieldForId={this.setFieldForId}/>
       </div>
     )

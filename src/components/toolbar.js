@@ -10,7 +10,7 @@ export default class Toolbar extends React.Component {
   }
 
   deleteSelected = () => {
-    this.props.setFieldForSelected('deleted', true)
+    this.props.setFieldForSelected('delete', true)
   }
 
   markAsRead = () => {
@@ -33,7 +33,7 @@ export default class Toolbar extends React.Component {
     let unreadCount = 0;
 
     this.props.messages.map(message => {
-      if (message.deleted !== true) {
+      if (message.delete !== true) {
         offset = 0;
         someSelected = message.selected ? 2 : someSelected;
         someNotSelected = message.selected ? someNotSelected : -1;
@@ -59,6 +59,10 @@ export default class Toolbar extends React.Component {
             </span>
             unread message{unreadCount !== 1 && 's' }
           </p>
+
+          <a className="btn btn-danger" onClick={this.props.toggleComposeMessage}>
+            <i className="fa fa-plus"></i>
+          </a>
 
           <button className="btn btn-default" onClick={() => this.selectAll(selectedTotal !== 2)}>
             <i className={selectedClass[selectedTotal]}></i>

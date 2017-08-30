@@ -6,7 +6,7 @@ const MessageList = ({ messages, setFieldForId }) => (
   <div>
   {
     messages.map((message, i) => {
-      if (!message.deleted) {
+      if (!message.delete) {
         return <Message key={ i } message={ message } setFieldForId={setFieldForId}/>
       }
       return <div key={ i }/>
