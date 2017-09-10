@@ -1,6 +1,9 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { createMessage, toggleComposeMessage } from '../actions'
 
-export default class Toolbar extends React.Component {
+class ComposeMessage extends React.Component {
   propTypes: {
     messages: React.PropTypes.array.isRequired
   }
@@ -13,9 +16,15 @@ export default class Toolbar extends React.Component {
     this.setState(state)
   }
 
-  createNewMessage = () => {
-    this.props.createNewMessage(this.state.subject, this.state.message)
+  createNewMessage = (e) => {
+    let body = {
+        subject: this.state.subject,
+        body: this.state.message
+      }
+    this.props.messageAdded(body)
+    this.props.toggleComposeMessage(false)
     this.setState({subject: '', message: ''})
+    e.preventDefault()
   }
 
   render() {
@@ -47,3 +56,13 @@ export default class Toolbar extends React.Component {
     )
   }
 }
+
+const mapStateToProps = state => ({
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  messageAdded: createMessage,
+  toggleComposeMessage,
+}, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(ComposeMessage)

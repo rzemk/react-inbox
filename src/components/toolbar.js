@@ -1,29 +1,74 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { createMessage, updateMessage, toggleComposeMessage } from '../actions'
 
-export default class Toolbar extends React.Component {
+class Toolbar extends React.Component {
   propTypes: {
     messages: React.PropTypes.array.isRequired
   }
 
   selectAll = (value) => {
-    this.props.setFieldForAll('selected', value)
+    let stateMessages = {}
+    this.props.messages.map(message => {
+      if(!message.delete) {
+        message.selected = value;
+        stateMessages[message.id] = Object.assign({}, message)
+      }
+      return message;
+    });
+    this.props.updateMessage(null, stateMessages, false)
   }
 
   deleteSelected = () => {
-    this.props.setFieldForSelected('delete', true)
+    this.setFieldForSelected('delete', true)
   }
 
   markAsRead = () => {
-    this.props.setFieldForSelected('read', true)
+    this.setFieldForSelected('read', true)
   }
 
   markAsUnread = () => {
-    this.props.setFieldForSelected('read', false)
+    this.setFieldForSelected('read', false)
+  }
+
+  setFieldForSelected = (field, value) => {
+    let body = {
+      messageIds: [],
+      command: field
+    }
+    body[field] = value
+    let stateMessages = {}
+    this.props.messages.map(message => {
+      if (message.selected && !message.delete) {
+        body.messageIds.push(message.id)
+        message[field] = value;
+        stateMessages[message.id] = Object.assign({}, message)
+      }
+      return message;
+    });
+
+    this.props.updateMessage(body, stateMessages, true)
   }
 
   setLabel = (type, value) => {
-    this.props.setLabelForSelected(type.value, value);
-    type.selectedIndex = 0;
+    const label = type.value
+
+    let messageIds = []
+    let stateMessages = {}
+    this.props.messages.map(message => {
+      if (message.selected && !message.delete) {
+        messageIds.push(message.id)
+        message.labels[label] = value
+        stateMessages[message.id] = Object.assign({}, message)
+      }
+      return message;
+    });
+
+    const command = value ? 'addLabel' : 'removeLabel'
+
+    this.props.updateMessage({messageIds, command, label}, stateMessages, true)
+    type.selectedIndex = 0
   }
 
   render() {
@@ -34,12 +79,12 @@ export default class Toolbar extends React.Component {
 
     this.props.messages.map(message => {
       if (message.delete !== true) {
-        offset = 0;
-        someSelected = message.selected ? 2 : someSelected;
-        someNotSelected = message.selected ? someNotSelected : -1;
-        !message.read && unreadCount++;
+        offset = 0
+        someSelected = message.selected ? 2 : someSelected
+        someNotSelected = message.selected ? someNotSelected : -1
+        !message.read && unreadCount++
       }
-      return message;
+      return message
     });
 
     const selectedTotal = someSelected + someNotSelected - offset;
@@ -48,7 +93,7 @@ export default class Toolbar extends React.Component {
       'fa fa-square-o',
       'fa fa-minus-square-o',
       'fa fa-check-square-o'
-    ];
+    ]
 
     return (
       <div className="row toolbar">
@@ -60,7 +105,7 @@ export default class Toolbar extends React.Component {
             unread message{unreadCount !== 1 && 's' }
           </p>
 
-          <a className="btn btn-danger" onClick={this.props.toggleComposeMessage}>
+          <a className="btn btn-danger" onClick={() => this.props.toggleComposeMessage(!this.props.showComposeMessage)}>
             <i className="fa fa-plus"></i>
           </a>
 
@@ -98,3 +143,16 @@ export default class Toolbar extends React.Component {
     )
   }
 }
+
+const mapStateToProps = state => ({
+  messages: state.messages.all,
+  showComposeMessage: state.messages.composeMessage
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  messageAdded: createMessage,
+  updateMessage,
+  toggleComposeMessage,
+}, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(Toolbar)

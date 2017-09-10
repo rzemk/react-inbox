@@ -5,8 +5,18 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import 'font-awesome/css/font-awesome.css';
 import Inbox from './components/Inbox';
-// import App from './App'
 import registerServiceWorker from './registerServiceWorker';
+// import 'materialize-css/dist/css/materialize.min.css'
+import store from './store'
+import { Provider } from 'react-redux'
+import { fetchMessages } from './actions'
 
-ReactDOM.render(<Inbox />, document.getElementById('root'));
+store.dispatch(fetchMessages())
+
+ReactDOM.render(
+  <Provider store={store}>
+    <Inbox />
+  </Provider>,
+  document.getElementById('root')
+);
 registerServiceWorker();
