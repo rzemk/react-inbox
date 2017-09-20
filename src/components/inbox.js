@@ -1,9 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import {BrowserRouter, Route} from 'react-router-dom'
 
-import Toolbar from './Toolbar'
-import MessageList from './MessageList'
+import Toolbar from './toolbar'
+import MessageList from './messageList'
 import ComposeMessage from './ComposeMessage'
 
 class Inbox extends React.Component {
@@ -29,11 +30,13 @@ class Inbox extends React.Component {
 
   render() {
     return (
-      <div>
-        <Toolbar />
-        { this.props.showComposeMessage && <ComposeMessage /> }
-        <MessageList />
-      </div>
+        <BrowserRouter>
+          <div>
+            <Route component={Toolbar} />
+            <Route path="/compose" component={ComposeMessage}/>
+            <Route component={MessageList} />
+          </div>
+        </BrowserRouter>
     )
   }
 }

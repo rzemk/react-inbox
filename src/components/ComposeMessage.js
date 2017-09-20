@@ -24,6 +24,7 @@ class ComposeMessage extends React.Component {
     this.props.messageAdded(body)
     this.props.toggleComposeMessage(false)
     this.setState({subject: '', message: ''})
+    this.props.history.push('/')
     e.preventDefault()
   }
 

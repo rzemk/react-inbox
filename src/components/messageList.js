@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import Message from './Message'
+import Message from './message'
 
 const MessageList = ({ messages, setFieldForId }) => (
   messages && messages.length > 0 &&

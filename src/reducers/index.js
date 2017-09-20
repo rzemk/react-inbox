@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { MESSAGES_RECEIVED, MESSAGE_UPDATE, MESSAGE_CREATE, TOGGLE_COMPOSE_MESSAGE } from '../actions'
+import { MESSAGES_RECEIVED, MESSAGE_UPDATE, MESSAGE_CREATE, TOGGLE_COMPOSE_MESSAGE, CONTENT_RECEIVED, CONTENT_DELETE } from '../actions'
 
 function messages(state = { all: [], composeMessage: false }, action) {
   let messages;
@@ -27,6 +27,16 @@ function messages(state = { all: [], composeMessage: false }, action) {
       return {
         ...state,
         composeMessage: action.show
+      }
+    case CONTENT_RECEIVED:
+      return {
+        ...state,
+        messageContent: action.messageContent
+      }
+    case CONTENT_DELETE:
+      return {
+        ...state,
+        messageContent: undefined
       }
     default:
       return state

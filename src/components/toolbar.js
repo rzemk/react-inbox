@@ -77,6 +77,8 @@ class Toolbar extends React.Component {
     let offset = 1;
     let unreadCount = 0;
 
+    const path = this.props.location.pathname.indexOf('compose') === -1 ? '/compose' : '/'
+
     this.props.messages.map(message => {
       if (message.delete !== true) {
         offset = 0
@@ -105,7 +107,7 @@ class Toolbar extends React.Component {
             unread message{unreadCount !== 1 && 's' }
           </p>
 
-          <a className="btn btn-danger" onClick={() => this.props.toggleComposeMessage(!this.props.showComposeMessage)}>
+          <a className="btn btn-danger" onClick={() => this.props.history.push(path)}>
             <i className="fa fa-plus"></i>
           </a>
 

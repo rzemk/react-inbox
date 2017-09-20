@@ -1,7 +1,7 @@
 export const MESSAGES_RECEIVED = 'MESSAGES_RECEIVED'
 export function fetchMessages() {
   return async (dispatch) => {
-    const response = await fetch(`http://localhost:3001/api/messages`)
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages`)
     const json = await response.json()
     let labels
     let messages = json._embedded.messages.map(message => {
@@ -25,7 +25,7 @@ export const MESSAGE_UPDATE = 'MESSAGE_UPDATE'
 export function updateMessage(body, messages, updateServer) {
   return async (dispatch) => {
     if (updateServer) {
-      await fetch(`http://localhost:3001/api/messages`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/messages`, {
           method: 'PATCH',
           body: JSON.stringify(body),
           headers: {
@@ -44,7 +44,7 @@ export function updateMessage(body, messages, updateServer) {
 export const MESSAGE_CREATE = 'MESSAGE_CREATE'
 export function createMessage(body) {
   return async (dispatch) => {
-    const response = await fetch(`http://localhost:3001/api/messages`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
@@ -67,6 +67,27 @@ export function toggleComposeMessage(value) {
     dispatch({
       type: TOGGLE_COMPOSE_MESSAGE,
       show: value
+    })
+  }
+}
+
+export const CONTENT_RECEIVED = 'CONTENT_RECEIVED'
+export function fetchContent(messageId) {
+  return async (dispatch) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/${messageId}`)
+    const json = await response.json()
+    dispatch({
+      type: CONTENT_RECEIVED,
+      messageContent: json.body
+    })
+  }
+}
+
+export const CONTENT_DELETE = 'CONTENT_DELETE'
+export function deleteContent(messageId) {
+  return async (dispatch) => {
+    dispatch({
+      type: CONTENT_DELETE
     })
   }
 }
